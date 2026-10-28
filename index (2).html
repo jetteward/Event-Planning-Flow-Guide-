@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Event Planner</title>
+<style>
+:root{--bg:#e8eddc;--card:#fbfaf3;--ink:#1f2d1c;--mut:#6b7566;--line:#dfe3d3;--dk:#24331f;--on:#fff;--ok:#dcead6;--warn:#f6e3cf;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a2217;--card:#242d21;--ink:#eef2e6;--mut:#a3ad9c;--line:#38432f;--dk:#c9dcb8;--on:#1a2217;--ok:#34452e;--warn:#4a3a28}}
+:root[data-theme="dark"]{--bg:#1a2217;--card:#242d21;--ink:#eef2e6;--mut:#a3ad9c;--line:#38432f;--dk:#c9dcb8;--on:#1a2217;--ok:#34452e;--warn:#4a3a28}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+.pill{display:block;width:max-content;margin:0 auto 12px;background:var(--dk);color:var(--on);font-weight:600;font-size:13px;padding:6px 16px;border-radius:99px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.stepper{display:flex;padding:14px 10px 8px;overflow-x:auto;gap:0}
+.st{flex:1;min-width:58px;text-align:center;font-size:10px;color:var(--mut);position:relative}
+.st b{display:grid;place-items:center;width:20px;height:20px;margin:0 auto 4px;border-radius:50%;background:var(--line);color:var(--mut);font-size:10px;position:relative;z-index:1}
+.st:not(:first-child)::before{content:"";position:absolute;top:10px;right:50%;width:100%;height:2px;background:var(--line)}
+.st.done::before,.st.cur::before{background:var(--dk)}
+.st.done b,.st.cur b{background:var(--dk);color:var(--on)}.st.cur{color:var(--ink);font-weight:700}
+main{padding:20px 6px 8px;min-height:380px}
+h2{margin:0 0 2px;font-size:18px}.sub{color:var(--mut);font-size:12.5px;margin:0 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.opt{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:20px 10px;text-align:center;font-weight:600;cursor:pointer;color:var(--ink);font:inherit;font-weight:600}
+.opt.sel{border:2px solid var(--dk);background:var(--ok)}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+label{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:3px}
+input[type=text],input[type=date],input[type=number]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font:inherit}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}
+.row small{display:block;color:var(--mut);font-size:12px}
+.btn{background:var(--dk);color:var(--on);border:0;border-radius:6px;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
+.btn.o{background:var(--card);color:var(--ink);border:1px solid var(--dk)}.btn:disabled{opacity:.4;cursor:default}
+.tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--ok);white-space:nowrap}.tag.w{background:var(--warn)}
+.tg{width:38px;height:22px;border-radius:99px;background:var(--line);border:0;position:relative;cursor:pointer;flex:none}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--card);transition:.15s}
+.tg.on{background:var(--dk)}.tg.on::after{left:19px}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:12px 6px 4px;border-top:1px solid var(--line);font-size:12px;color:var(--mut)}
+.ven{cursor:pointer}.ven.sel{outline:2px solid var(--dk)}
+.det{background:var(--bg);border-radius:8px;padding:10px;margin-top:8px;font-size:13px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;display:block;overflow-x:auto}.tbl th,.tbl td{padding:7px 8px;text-align:center;border-bottom:1px solid var(--line)}.tbl td:first-child,.tbl th:first-child{text-align:left}
+.tools{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:12px;color:var(--mut)}.tools .btn{padding:5px 10px;font-size:12px}
+pre{white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:8px;font-size:12px;margin:8px 0}
+.kv{display:flex;justify-content:space-between;padding:3px 0;font-size:13px}.kv span:first-child{color:var(--mut)}
+h4{margin:12px 0 4px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+</style></head><body>
+<div class="wrap"><span class="pill">Event Planner</span>
+<div class="panel"><div class="stepper" id="stp"></div><main id="m"></main><div class="nav"><button class="btn o" id="bk">Back</button><span id="cnt"></span><button class="btn" id="nx">Next</button></div></div><div class="tools"><span>Your plan saves automatically in this browser.</span><span><button class="btn o" id="exp">Export plan</button> <button class="btn o" id="impb">Import plan</button> <button class="btn o" id="rst">Start over</button></span><input type="file" id="imp" accept=".json" hidden></div></div>
+<script>
+const NAMES=["Event type","Basics","Venue","Design","Guests","Budget","Guest exp.","Review"];
+const TYPES=["Wedding","Conference","Dinner party","Birthday","Corporate retreat","Custom event"];
+const LAYOUTS=["Round tables","Long banquet table","Lounge setup"];
+const DECOR=[["Centerpiece — floating candle bowl",35,"/table","Bloom & Bowl Rentals","4.7","Lovely glass bowls, easy pickup."],["Lounge seating set",450,"/set","Velvet Room Co.","4.6","Clean pieces, on time."],["String light canopy",600," flat","Glow Events Co.","4.8","Reliable delivery, great condition — verified renter"],["Reclaimed wood head table",275,"","Timber & Thread","4.9","Gorgeous table, great service."]];
+const LOGI=[["Guest list & RSVP tracking","Invite tracking and response status per guest.",1,1],["Seating chart / place settings","Table layout, head table, name cards.",1,1],["Transportation","Shuttle, valet, or rideshare coordination.",0],["Parking & valet info","Parking instructions shared with guests.",0],["Breakout rooms after the event","Space for post-event seminars or forums.",0],["Weather forecast integration","Forecast for your event date and location.",0]];
+const VENUES=[["The Larimer Hall","Banquet hall · up to 200"],["Platte River Pavilion","Outdoor pavilion · up to 150"],["Capitol Hill Loft","Loft · up to 120"],["Cherry Creek Garden Room","Garden venue · up to 140"],["Five Points Warehouse","Industrial space · up to 300"]];
+const VEND=[["Lucia Ray Photography","Photography","Check availability",1],["The Salt Air Trio","Live music","Available your date"],["Willow & Stem Rentals","Rentals","Available your date"]];
+const CHECK=[["12 weeks out","Book venue & catering"],["8 weeks out","Send save-the-dates"],["4 weeks out","Finalize menu and seating"],["1 week out","Confirm vendors and final headcount"]];
+const GUESTS=["Priya Shah","Dane Whitfield","Alicia Reyes","Sam Kim","Noor Hassan","Taylor Brooks","Morgan Lee","Casey Ward"];
+const DIET=["Vegetarian","Vegan","Gluten-free","Nut allergy"];
+const S={step:0,type:null,name:"Autumn Harvest Dinner",date:"2026-10-24",count:120,loc:"Denver, CO",venue:null,searched:false,layout:"Long banquet table",open:2,radius:15,logi:LOGI.map(l=>!!l[2]),photo:true,music:true,theme:"Black-tie classic",beo:false,sent:false,diet:{"0-0":1,"4-2":1},brief:false};
+try{const sv=JSON.parse(localStorage.getItem("eventPlannerV1"));if(sv&&typeof sv=="object")Object.assign(S,sv)}catch(x){}
+const $=id=>document.getElementById(id);
+const money=n=>"$"+n.toLocaleString();
+function total(){let t=S.count*150+(S.venue?8000:0);if(S.photo)t+=4000;if(S.music)t+=2500;t+=S.count/10*35*0+Math.round(S.count/10)*35+450+600+275;return Math.round(t/1000)*1000}
+function tg(k,on){return `<button class="tg ${on?"on":""}" data-tg="${k}" aria-label="toggle"></button>`}
+function view(){
+ const s=S.step;
+ if(s==0)return `<h2>What are you planning?</h2><p class="sub">Pick an event type — the rest of the planner will highlight the features that matter most for it.</p><div class="grid">${TYPES.map(t=>`<button class="opt ${S.type==t?"sel":""}" data-type="${t}">${t}</button>`).join("")}</div>`;
+ if(s==1)return `<h2>Event basics</h2><p class="sub">Core details used throughout the rest of the planner.</p><div class="box f2"><div><label>Event name</label><input type="text" data-f="name" value="${S.name}"></div><div><label>Date</label><input type="date" data-f="date" value="${S.date}"></div><div><label>Guest count</label><input type="number" data-f="count" value="${S.count}"></div><div><label>Location (city or ZIP)</label><input type="text" data-f="loc" value="${S.loc}"></div></div>`;
+ if(s==2)return `<h2>Find a venue</h2><p class="sub">Search venues near ${S.loc||"you"}. This rebuild shows sample venues; live results need a server-side data source.</p><div class="box"><label>Search by location</label><div style="display:flex;gap:8px"><input type="text" data-f="loc" value="${S.loc}"><button class="btn" id="srch">Search</button></div></div>${S.searched?VENUES.map((v,i)=>`<div class="box ven ${S.venue==v[0]?"sel":""}" data-v="${i}"><b>${v[0]}</b><small style="display:block;color:var(--mut)">${v[1]} · ${S.loc} · sample listing</small></div>`).join(""):""}`;
+ if(s==3)return `<h2>Design your space</h2><p class="sub">Choose a layout, then tap a décor item for vendor options.</p><div class="grid" style="margin-bottom:14px">${LAYOUTS.map(l=>`<button class="opt ${S.layout==l?"sel":""}" data-l="${l}" style="padding:14px 8px;font-size:13px">${l}</button>`).join("")}</div><div class="box"><h4 style="margin-top:0">Click an item for vendor recommendations</h4>${DECOR.map((d,i)=>`<div class="row" style="flex-wrap:wrap;cursor:pointer" data-d="${i}"><div>${d[0]}<small>Tap to see rental & purchase options</small></div><span class="tag">${money(d[1])}${d[2].toUpperCase()}</span>${S.open==i?`<div class="det" style="flex-basis:100%"><b>${d[3]}</b> <span style="color:#c98a1b">★ ${d[4]}</span><br>Reviews: “${d[5]}”<div style="margin-top:8px;display:flex;gap:8px"><button class="btn o" style="padding:4px 10px;font-size:12px">Visit website</button><button class="btn o" style="padding:4px 10px;font-size:12px">Contact vendor</button></div></div>`:""}</div>`).join("")}</div><div class="box"><h4 style="margin-top:0">Vendor search radius</h4><div style="display:flex;gap:12px;align-items:center"><input type="range" min="5" max="50" value="${S.radius}" id="rad" style="flex:1"><b id="radv">${S.radius} mi</b></div><small style="color:var(--mut)">Approximately ${Math.round(S.radius/2)} rental vendors found within ${S.radius} miles.</small></div>`;
+ if(s==4)return `<h2>Guests & logistics</h2><p class="sub">Turned on automatically based on your event type — adjust as needed.</p><div class="box">${LOGI.map((l,i)=>`<div class="row"><div>${l[0]} ${l[3]?'<span class="tag">RECOMMENDED</span>':""}<small>${l[1]}</small></div>${tg("l"+i,S.logi[i])}</div>`).join("")}</div><div class="box"><h4 style="margin-top:0">Countdown checklist</h4>${CHECK.map(c=>`<div class="row"><div><b>${c[0]}</b><small>${c[1]}</small></div></div>`).join("")}</div>`;
+ if(s==5)return `<h2>Budget & vendors</h2><p class="sub">Planned spend updates as you book. Estimated total: <b>${money(total())}</b></p><div class="box">${VEND.map(v=>`<div class="row"><div>${v[0]}<small>${v[1]}</small></div><span class="tag ${v[3]?"w":""}">${v[2].toUpperCase()}</span></div>`).join("")}</div><div class="box"><h4 style="margin-top:0">Additional bookings</h4><div class="row"><b>Photography / videography</b>${tg("photo",S.photo)}</div><div class="row"><b>Live music</b>${tg("music",S.music)}</div><div class="row"><div>Décor theme<small>${S.theme}</small></div></div></div><div class="box"><h4 style="margin-top:0">Banquet Event Order (BEO)</h4><button class="btn o" id="beo">Generate BEO draft</button>${S.beo?`<pre>EVENT: ${S.name}\nDATE: ${S.date}\nGUESTS: ${S.count}\nLAYOUT: ${S.layout}\nVENUE: ${S.venue||"TBD"}</pre>`:""}</div>`;
+ if(s==6)return `<h2>Guest experience</h2><p class="sub">Send invites and track dietary needs.</p><div class="box">${GUESTS.map(g=>`<div class="row"><span>${g}</span>${S.sent?'<span class="tag">SENT ✓</span>':""}</div>`).join("")}<button class="btn" id="send" style="margin-top:10px">${S.sent?"Sent to all 8 guests ✓":"Send invites to all 8 guests"}</button></div><div class="box"><h4 style="margin-top:0">Dietary restriction tracking</h4><table class="tbl"><tr><th>Guest</th>${DIET.map(d=>`<th>${d}</th>`).join("")}</tr>${GUESTS.map((g,i)=>`<tr><td><b>${g}</b></td>${DIET.map((d,j)=>`<td><input type="checkbox" data-c="${i}-${j}" ${S.diet[i+"-"+j]?"checked":""}></td>`).join("")}</tr>`).join("")}</table></div>`;
+ const notes=GUESTS.map((g,i)=>{const r=DIET.filter((d,j)=>S.diet[i+"-"+j]);return r.length?g+": "+r.join(", "):null}).filter(Boolean);
+ const on=LOGI.filter((l,i)=>S.logi[i]).map(l=>l[0]).join(", ")||"None";
+ const txt=`EVENT BRIEF\n${S.name}\nType: ${S.type||"—"}\nDate: ${S.date}\nGuests: ${S.count}\nVenue: ${S.venue||"—"}\nStyle: ${S.theme}\nLogistics: ${on}\nPlanned spend: ${money(total())}\nDietary: ${notes.join("; ")||"None"}`;
+ const kv=(a,b)=>`<div class="kv"><span>${a}</span><span>${b}</span></div>`;
+ return `<h2>Review & event brief</h2><p class="sub">Everything you’ve planned, in one place.</p><div class="box"><h4 style="margin-top:0">Event</h4>${kv("Type",S.type||"—")}${kv("Name",S.name)}${kv("Date",S.date)}${kv("Guest count",S.count)}${kv("Venue",S.venue||"—")}<h4>Design</h4>${kv("Style",S.theme)}<h4>Logistics enabled</h4><div style="font-size:13px">${on}</div><h4>Budget</h4>${kv("Total planned spend",money(total()))}<h4>Dietary notes</h4><div style="font-size:13px">${notes.join("; ")||"None"}</div><button class="btn" id="brief" style="margin-top:12px">${S.brief?"Hide event brief":"View event brief"}</button>${S.brief?`<pre id="bt">${txt}</pre><button class="btn o" id="cp">Copy brief</button>`:""}</div>`;
+}
+function render(){try{localStorage.setItem("eventPlannerV1",JSON.stringify(S))}catch(x){}
+ $("stp").innerHTML=NAMES.map((n,i)=>`<div class="st ${i<S.step?"done":i==S.step?"cur":""}"><b>${i<S.step?"✓":i+1}</b>${n}</div>`).join("");
+ $("m").innerHTML=view();$("cnt").textContent=`Step ${S.step+1} of 8`;
+ $("bk").disabled=S.step==0;$("nx").textContent=S.step==7?"Finish":"Next";$("nx").disabled=S.step==0&&!S.type;
+}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("[data-type],[data-l],[data-d],[data-v],[data-tg],#srch,#beo,#send,#brief,#cp,#bk,#nx,#exp,#impb,#rst");if(!t)return;
+ const d=t.dataset;
+ if(d.type)S.type=d.type;else if(d.l)S.layout=d.l;else if(d.d!==undefined)S.open=S.open==+d.d?-1:+d.d;
+ else if(d.v!==undefined)S.venue=VENUES[+d.v][0];
+ else if(d.tg){if(d.tg=="photo")S.photo=!S.photo;else if(d.tg=="music")S.music=!S.music;else{const i=+d.tg.slice(1);S.logi[i]=!S.logi[i]}}
+ else if(t.id=="srch")S.searched=true;else if(t.id=="beo")S.beo=!S.beo;else if(t.id=="send")S.sent=true;else if(t.id=="brief")S.brief=!S.brief;
+ else if(t.id=="cp"){try{navigator.clipboard.writeText($("bt").textContent);t.textContent="Copied ✓"}catch(x){t.textContent="Select the text to copy"};return}
+ else if(t.id=="exp"){try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:"application/json"}));a.download="event-plan.json";a.click()}catch(x){}return}
+ else if(t.id=="impb"){$("imp").click();return}
+ else if(t.id=="rst"){if(confirm("Clear this plan and start over?")){try{localStorage.removeItem("eventPlannerV1")}catch(x){}location.reload()}return}
+ else if(t.id=="bk"){S.step--;}
+ else if(t.id=="nx"){if(S.step==7){alert("Your event plan is complete!");return}S.step++;}
+ render();window.scrollTo(0,0);
+});
+document.addEventListener("input",e=>{
+ const t=e.target;
+ if(t.dataset.f){S[t.dataset.f]=t.type=="number"?(+t.value||0):t.value}
+ else if(t.id=="rad"){S.radius=+t.value;render();$("rad").focus()}
+});
+document.addEventListener("change",e=>{if(e.target.id=="imp"){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{Object.assign(S,JSON.parse(r.result));render()}catch(x){alert("That file could not be read.")}};r.readAsText(f);e.target.value="";return}
+ if(e.target.dataset.c){S.diet[e.target.dataset.c]=e.target.checked?1:0}});
+render();
+</script></body></html>
